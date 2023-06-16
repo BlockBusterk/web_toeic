@@ -6,21 +6,19 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.sql.*;
 
 /**
  *
- * @author ACER
+ * @author VTN
  */
-public class Login extends HttpServlet {
+@WebServlet(urlPatterns = {"/question"})
+public class question extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -31,7 +29,7 @@ public class Login extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-     public static Connection getConnection(String dbURL, String userName, 
+      public static Connection getConnection(String dbURL, String userName, 
             String password) {
         Connection conn = null;
         try {
@@ -45,8 +43,7 @@ public class Login extends HttpServlet {
         return conn;
     }
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+            throws ServletException, IOException { response.setContentType("text/html;charset=UTF-8");
         String severNameCty = "VTNTHUCTAP";
        String DB_URL = "jdbc:sqlserver://"+severNameCty+":1433;"
             + "databaseName=web_toeic"
@@ -55,28 +52,69 @@ public class Login extends HttpServlet {
      String PASSWORD = "Huyho@ng432002";
      String email = request.getParameter("email");
      String pass = request.getParameter("password");
-  try {
+  try (PrintWriter out = response.getWriter())
+  {
             // connnect to database 'testdb'
+       out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet NewServlet</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet NewServlet at " + request.getContextPath() + "</h1>");
+            out.println(" <form action=\"update_post\" method=\"post\" id=\"form1\">  ");
             Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD);
             // crate statement
             Statement stmt = conn.createStatement();
             // get data from table 'student'
             
-            ResultSet rs = stmt.executeQuery("EXEC check_login '"+email+"','"+pass+"'");
+            ResultSet rs = stmt.executeQuery("Exec get_question 5");
+            Statement stmtA = conn.createStatement();
+           Statement stmtB = conn.createStatement();
+           Statement stmtC = conn.createStatement();
+           Statement stmtD = conn.createStatement();
             // show data
             if (rs.next()) {
-                response.sendRedirect("question?email="+email);
-                stmt.close();
-                rs.close();
-                conn.close();
+                 int idCauhoi = rs.getInt(1);
+                ResultSet rs_DapanA = stmtA.executeQuery("select * from lua_chon_dap_an where cauhoibaithithuid = "+idCauhoi+" and choice = 'a' ");
+                ResultSet rs_DapanB = stmtB.executeQuery("select * from lua_chon_dap_an where cauhoibaithithuid = "+idCauhoi+" and choice = 'b' ");
+                ResultSet rs_DapanC = stmtC.executeQuery("select * from lua_chon_dap_an where cauhoibaithithuid = "+idCauhoi+" and choice = 'c' ");
+                ResultSet rs_DapanD = stmtD.executeQuery("select * from lua_chon_dap_an where cauhoibaithithuid = "+idCauhoi+" and choice = 'd' ");
+                out.print("<div id=\"noidung\" name=\"noidung\"   ><b>" + rs.getString(2) + "</b></div><br>");
+                if(rs_DapanA.next())
+                {
+                     out.print("<input type=\"radio\"  name=\"age\" value=\"A\">" + "A. " +rs_DapanA.getString(3)+ "</div><br><br>");
+                }
+               if(rs_DapanB.next())
+                {
+                     out.print("<input type=\"radio\"  name=\"age\" value=\"A\">" + "B. " +rs_DapanB.getString(3)+ "</div><br><br>");
+                }
+               if(rs_DapanC.next())
+                {
+                     out.print("<input type=\"radio\"  name=\"age\" value=\"A\">" + "C. " +rs_DapanC.getString(3)+ "</div><br><br>");
+                }
+               if(rs_DapanD.next())
+                {
+                     out.print("<input type=\"radio\"  name=\"age\" value=\"A\">" + "D. " +rs_DapanD.getString(3)+ "</div><br><br>");
+                }
+                out.print(" <input type=\"submit\" id=\"submitQuiz\" value=\"Submit\">");
             }
             else{
                 response.sendRedirect("index.jsp");
             }
+             stmt.close();
+                rs.close();
+                conn.close();
+                 out.println("</form>");
+                 out.println("</body>");
+            out.println("</html>");
         } catch (Exception ex) {
             ex.printStackTrace();
+            
+        }   
+   
         }
-    }
+    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

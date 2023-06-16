@@ -31,19 +31,21 @@ CREATE TABLE ket_qua (
 CREATE TABLE cau_hoi_bai_thi_thu (
   cauhoibaithithuid int NOT NULL IDENTITY(1,1) PRIMARY KEY,
   audiomp3 varchar(255) DEFAULT NULL,
-  correctanswer varchar(255) DEFAULT NULL,
-  dap_an_user varchar(255) DEFAULT NULL,
   image_test varchar(255) DEFAULT NULL,
-  number int DEFAULT NULL,
-  option1 varchar(255) DEFAULT NULL,
-  option2 varchar(255) DEFAULT NULL,
-  option3 varchar(255) DEFAULT NULL,
-  option4 varchar(255) DEFAULT NULL,
-  paragraph text,
+  part int DEFAULT NULL,
   question varchar(255) DEFAULT NULL,
   baithithuid int NOT NULL,
   CONSTRAINT fk_baithithuid_cauhoi FOREIGN KEY (baithithuid) REFERENCES bai_thi_thu (baithithuid) ON DELETE CASCADE
 )
+create table lua_chon_dap_an(
+  cauhoibaithithuid int ,
+  choice varchar(1),
+  content varchar(255),
+  result varchar(255),
+  primary key(cauhoibaithithuid,choice),
+  CONSTRAINT fk_baithithuid_luachon FOREIGN KEY (cauhoibaithithuid) REFERENCES cau_hoi_bai_thi_thu (cauhoibaithithuid) ON DELETE CASCADE
+)
+
 go
 Create procedure check_login
 (
@@ -54,11 +56,17 @@ Create procedure check_login
 	begin
 		select * from nguoi_dung where email=@email and matkhau=@matkhau
 	end
-insert into bai_thi_thu(anhbaithithu,tenbaithithu) values ('','test1')
-select * from nguoi_dung 
-DECLARE @i int = 41
-WHILE @i <= 50 
-BEGIN
-     insert into cau_hoi_bai_thi_thu (audiomp3,image_test,baithithuid) values ('image_sound\'+CAST(@i as varchar)+'.MP3','image_sound\'+CAST(@i as varchar)+'.png',1)
-    SET @i = @i + 1
-END
+	go
+	Create procedure get_question
+(
+    @part tinyint,
+	@sl_cauhoi int
+)
+	As 
+	begin
+SELECT    TOP (@sl_cauhoi) cauhoibaithithuid, question, part
+FROM      cau_hoi_bai_thi_thu
+WHERE    (part = @part)
+ORDER BY NEWID()
+	end
+

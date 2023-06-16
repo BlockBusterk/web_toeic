@@ -6,21 +6,18 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import java.sql.*;
 /**
  *
- * @author ACER
+ * @author VTN
  */
-public class Login extends HttpServlet {
+@WebServlet(urlPatterns = {"/question_update"})
+public class question_update extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -46,7 +43,7 @@ public class Login extends HttpServlet {
     }
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+      response.setContentType("text/html;charset=UTF-8");
         String severNameCty = "VTNTHUCTAP";
        String DB_URL = "jdbc:sqlserver://"+severNameCty+":1433;"
             + "databaseName=web_toeic"
@@ -55,27 +52,29 @@ public class Login extends HttpServlet {
      String PASSWORD = "Huyho@ng432002";
      String email = request.getParameter("email");
      String pass = request.getParameter("password");
-  try {
+  try (PrintWriter out = response.getWriter())
+  {
             // connnect to database 'testdb'
             Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD);
             // crate statement
             Statement stmt = conn.createStatement();
             // get data from table 'student'
             
-            ResultSet rs = stmt.executeQuery("EXEC check_login '"+email+"','"+pass+"'");
+            ResultSet rs = stmt.executeQuery("Exec get_question 5");
             // show data
             if (rs.next()) {
-                response.sendRedirect("question?email="+email);
-                stmt.close();
-                rs.close();
-                conn.close();
+              out.println(rs.getString(1));
+               
             }
             else{
                 response.sendRedirect("index.jsp");
             }
+             stmt.close();
+                rs.close();
+                conn.close();
         } catch (Exception ex) {
             ex.printStackTrace();
-        }
+        }   
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -12,11 +12,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <img src="image_sound\41.png" alt="Girl in a jacket" width="300" height="300"><br>
-        <audio controls>
-            <source src="image_sound\41.MP3" type="audio/mpeg">
-            Your browser does not support the audio tag.
-        </audio><br>
+        <label> </label><br>
         <form>
             <input type="radio"  name="age" value="A">
             <label>A</label><br>
@@ -26,8 +22,8 @@
              <label>C</label><br>
             <input type="radio"  name="age" value="D">
             <label>D</label><br><br>
-            
-            <input type="submit" value="Submit">
+            <button type="button">Next Question</button> <br><br>
+            <input type="button" id="submitQuiz" value="Submit">
         </form>  
     </body>
 </html>
