@@ -65,12 +65,21 @@ Create procedure check_login
 )    
 	As 
 	begin
-	Declare @num int 
+	Declare @num int
+	Declare @idcauhoi int
 	set @num = (select COUNT(*) from ket_qua where email = @email and ngaylambai =CAST( GETDATE() AS Date ))
-    SELECT    TOP (1) cauhoibaithithuid, question, part,@num
+     SELECT    TOP (1) @idcauhoi= cauhoibaithithuid
     FROM      cau_hoi_bai_thi_thu
     WHERE    (part = @part) and cauhoibaithithuid not in (select cauhoibaithithuid from ket_qua where email = @email and ngaylambai =CAST( GETDATE() AS Date ) )  
     ORDER BY NEWID()
+    
+    SELECT     cauhoibaithithuid, question, part,@num
+        FROM      cau_hoi_bai_thi_thu
+    WHERE     cauhoibaithithuid= @idcauhoi
+    if @num < 5
+    begin
+    insert into ket_qua(cauhoibaithithuid,email,ngaylambai) values (@idcauhoi,@email,CAST( GETDATE() AS Date))
+    end
 	end
 delete from ket_qua
 go
@@ -91,10 +100,10 @@ Create procedure insert_ketqua
 )
 	As
 	begin
-	insert into ket_qua(cauhoibaithithuid,email,dungsai,ngaylambai) values(@cauhoibaithithuid,@email,@dungsai,CAST( GETDATE() AS Date ))
+	update ket_qua set dungsai = @dungsai where cauhoibaithithuid = @cauhoibaithithuid and email = @email and ngaylambai = CAST(GetDate() as DATE)
 	end
 	go
 DBCC CHECKIDENT ('[cau_hoi_bai_thi_thu]', RESEED, 0);
 GO
-
+delete from ket_qua
 select * from ket_qua
