@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.*;
+import java.time.LocalDate;
 
 /**
  *
@@ -51,7 +52,7 @@ public class question extends HttpServlet {
      String USER_NAME = "sa";
      String PASSWORD = "Huyho@ng432002";
      String email = request.getParameter("email");
-     String pass = request.getParameter("password");
+     int idCauHoi=0;
   try (PrintWriter out = response.getWriter())
   {
             // connnect to database 'testdb'
@@ -61,58 +62,90 @@ public class question extends HttpServlet {
             out.println("<title>Servlet NewServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet NewServlet at " + request.getContextPath() + "</h1>");
-            out.println(" <form action=\"update_post\" method=\"post\" id=\"form1\">  ");
+            out.println(" <form action=\"Result\" method=\"post\" id=\"form1\">  ");
             Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD);
             // crate statement
-            Statement stmt = conn.createStatement();
-            // get data from table 'student'
+            Statement stmtQuestion = conn.createStatement();
+            Statement stmtChoice = conn.createStatement();
+            Statement stmtCount = conn.createStatement();
+          
+            ResultSet rsQuestion = stmtQuestion.executeQuery("Exec get_question 5,"+"'"+email+"'");
             
-            ResultSet rs = stmt.executeQuery("Exec get_question 5");
-            Statement stmtA = conn.createStatement();
-           Statement stmtB = conn.createStatement();
-           Statement stmtC = conn.createStatement();
-           Statement stmtD = conn.createStatement();
             // show data
-            if (rs.next()) {
-                 int idCauhoi = rs.getInt(1);
-                ResultSet rs_DapanA = stmtA.executeQuery("select * from lua_chon_dap_an where cauhoibaithithuid = "+idCauhoi+" and choice = 'a' ");
-                ResultSet rs_DapanB = stmtB.executeQuery("select * from lua_chon_dap_an where cauhoibaithithuid = "+idCauhoi+" and choice = 'b' ");
-                ResultSet rs_DapanC = stmtC.executeQuery("select * from lua_chon_dap_an where cauhoibaithithuid = "+idCauhoi+" and choice = 'c' ");
-                ResultSet rs_DapanD = stmtD.executeQuery("select * from lua_chon_dap_an where cauhoibaithithuid = "+idCauhoi+" and choice = 'd' ");
-                out.print("<div id=\"noidung\" name=\"noidung\"   ><b>" + rs.getString(2) + "</b></div><br>");
-                if(rs_DapanA.next())
+            if (rsQuestion.next()) {
+                if(rsQuestion.getInt(4)<5)
                 {
-                     out.print("<input type=\"radio\"  name=\"age\" value=\"A\">" + "A. " +rs_DapanA.getString(3)+ "</div><br><br>");
+                  idCauHoi = rsQuestion.getInt(1);
+                  getServletContext().setAttribute( "idCauHoi", idCauHoi );
+                  getServletContext().setAttribute( "email", email );
+                  
+                 out.print(idCauHoi);
+                    try (ResultSet rsChoice = stmtChoice.executeQuery("Exec get_choice "+idCauHoi)) {
+                        out.println(" <h1 id=\"countdown\">35</h1>");
+                       
+                        out.println("  <script type=\"text/javascript\">");
+                        out.println(" var seconds;");
+                        out.println(" var temp;");
+                        out.println(" function countdown()");
+                        out.println(" {");
+                        out.println(" seconds=document.getElementById('countdown').innerHTML;");
+                        out.println(" seconds=parseInt(seconds,10);");
+                        out.println(" if (seconds<=0)");
+                        out.println("     {");
+                        out.println(" temp=document.getElementById('countdown');");
+                        out.println(" temp.innerHTML=\"all done\";");
+                        out.println(" document.getElementById('form1').submit();");
+                        out.println(" }");
+                        out.println(" seconds--;");
+                        out.println(" temp=document.getElementById('countdown');");
+                        out.println(" temp.innerHTML=seconds;");
+                        out.println(" setTimeout(countdown,1000);");
+                        out.println(" }");
+                        out.println(" countdown();");
+                        out.println(" </script>");
+                        out.print("<div id=\"noidung\" name=\"noidung\"   ><b>" + rsQuestion.getString(2) + "</b></div><br>");
+                        while(rsChoice.next())
+                        {
+                            switch (rsChoice.getString(2).toLowerCase()) {
+                                case "a":
+                                    out.print("<input type=\"radio\"  name=\"dap_an\" value=\""+rsChoice.getString(4)+"\">" + "A" +rsChoice.getString(3)+ "</div><br><br>");
+                                    break;
+                                case "b":
+                                    out.print("<input type=\"radio\"  name=\"dap_an\" value=\""+rsChoice.getString(4)+"\">" + "B" +rsChoice.getString(3)+ "</div><br><br>");
+                                    break;
+                                case "c":
+                                    out.print("<input type=\"radio\"  name=\"dap_an\" value=\""+rsChoice.getString(4)+"\">" + "C" +rsChoice.getString(3)+ "</div><br><br>");
+                                    break;
+                                case "d":
+                                    out.print("<input type=\"radio\"  name=\"dap_an\" value=\""+rsChoice.getString(4)+"\">" + "D" +rsChoice.getString(3)+ "</div><br><br>");
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }//
+                        
+                        out.print(" <input type=\"submit\" id=\"submitQuiz\" value=\"Submit\">");
+                    }
+            }else {
+                     out.println("<h1>Da vuot qua so cau hoi trong ngay</h1>");
                 }
-               if(rs_DapanB.next())
-                {
-                     out.print("<input type=\"radio\"  name=\"age\" value=\"A\">" + "B. " +rs_DapanB.getString(3)+ "</div><br><br>");
-                }
-               if(rs_DapanC.next())
-                {
-                     out.print("<input type=\"radio\"  name=\"age\" value=\"A\">" + "C. " +rs_DapanC.getString(3)+ "</div><br><br>");
-                }
-               if(rs_DapanD.next())
-                {
-                     out.print("<input type=\"radio\"  name=\"age\" value=\"A\">" + "D. " +rs_DapanD.getString(3)+ "</div><br><br>");
-                }
-                out.print(" <input type=\"submit\" id=\"submitQuiz\" value=\"Submit\">");
             }
+            
             else{
                 response.sendRedirect("index.jsp");
             }
-             stmt.close();
-                rs.close();
+                stmtQuestion.close();
+                stmtChoice.close();
+                
+                rsQuestion.close();
                 conn.close();
-                 out.println("</form>");
-                 out.println("</body>");
+                out.println("</form>");
+                out.println("</body>");
             out.println("</html>");
+           
         } catch (Exception ex) {
             ex.printStackTrace();
-            
         }   
-   
         }
     
 

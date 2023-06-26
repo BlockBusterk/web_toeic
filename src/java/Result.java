@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author VTN
  */
+@WebServlet(urlPatterns = {"/Result"})
 public class Result extends HttpServlet {
 
     /**
@@ -55,7 +57,6 @@ public class Result extends HttpServlet {
         ServletContext servletContext = getServletContext();
         String dapAn = request.getParameter("dap_an");
         String email =  servletContext.getAttribute("email").toString();
-       
         Integer idCauHoi = (Integer) servletContext.getAttribute("idCauHoi");
         String severNameCty = "VTNTHUCTAP";
        String DB_URL = "jdbc:sqlserver://"+severNameCty+":1433;"
@@ -73,6 +74,10 @@ public class Result extends HttpServlet {
             out.println("<body>");
              Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD);
             Statement stmtResult = conn.createStatement();
+            if(dapAn == null)
+            {
+                dapAn = "FALSE";
+            }
             int rsResult = stmtResult.executeUpdate("Exec insert_ketqua "+idCauHoi+",'"+email+"','"+dapAn+"'");
             out.println("<h1>"+dapAn+"</h1>");
             out.println("</body>");
