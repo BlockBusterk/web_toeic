@@ -5,11 +5,13 @@ CREATE TABLE bai_thi_thu(
   anhbaithithu varchar(255) DEFAULT NULL,
   tenbaithithu varchar(20) DEFAULT NULL,
 )
+SET IDENTITY_INSERT bai_thi_thu ON
+drop table bai_thi_thu
 insert into bai_thi_thu(baithithuid) values(1)
 drop table nguoi_dung
 CREATE TABLE nguoi_dung(
-  dia_chi varchar(255) DEFAULT NULL,
   email varchar(255)  PRIMARY KEY NOT NULL,
+  dia_chi varchar(255) DEFAULT NULL,
   ho_ten varchar(55)  DEFAULT NULL,
   matkhau varchar(255)  DEFAULT NULL,
   so_dien_thoai varchar(11) DEFAULT NULL,
@@ -60,10 +62,12 @@ Create procedure check_login
 (
     @part tinyint,
 	@email varchar(30)
-)
+)    
 	As 
 	begin
-    SELECT    TOP (1) cauhoibaithithuid, question, part,  COUNT(*) from ket_qua where email = @email and ngaylambai = CAST( GETDATE() AS Date) as num
+	Declare @num int 
+	set @num = (select COUNT(*) from ket_qua where email = @email and ngaylambai =CAST( GETDATE() AS Date ))
+    SELECT    TOP (1) cauhoibaithithuid, question, part,@num
     FROM      cau_hoi_bai_thi_thu
     WHERE    (part = @part) and cauhoibaithithuid not in (select cauhoibaithithuid from ket_qua where email = @email and ngaylambai =CAST( GETDATE() AS Date ) )  
     ORDER BY NEWID()
@@ -87,7 +91,10 @@ Create procedure insert_ketqua
 )
 	As
 	begin
-	insert into ket_qua(cauhoibaithithuid,email,dungsai,ngaylambai) values(@cauhoibaithithuid,'@email',@dungsai,CAST( GETDATE() AS Date ))
+	insert into ket_qua(cauhoibaithithuid,email,dungsai,ngaylambai) values(@cauhoibaithithuid,@email,@dungsai,CAST( GETDATE() AS Date ))
 	end
+	go
+DBCC CHECKIDENT ('[cau_hoi_bai_thi_thu]', RESEED, 0);
+GO
 
-
+select * from ket_qua
