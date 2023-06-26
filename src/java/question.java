@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.*;
 import java.time.LocalDate;
+import javax.servlet.ServletContext;
 
 /**
  *
@@ -52,6 +53,11 @@ public class question extends HttpServlet {
      String USER_NAME = "sa";
      String PASSWORD = "Huyho@ng432002";
      String email = request.getParameter("email");
+     if(email == null)
+     {
+         ServletContext servletContext = getServletContext();
+         email = servletContext.getAttribute("email").toString();
+     }
      int idCauHoi=0;
   try (PrintWriter out = response.getWriter())
   {
@@ -103,6 +109,8 @@ public class question extends HttpServlet {
                         out.println(" }");
                         out.println(" countdown();");
                         out.println(" </script>");
+                        out.println("<img src=\"image_sound\\41.png\" alt=\"Trulli\" width=\"500\" height=\"333\">");
+                        out.println("<audio controls>  <source src=\"image_sound\\41.MP3\" type=\"audio/mpeg\"> </audio>");
                         out.print("<div id=\"noidung\" name=\"noidung\"   ><b>" + rsQuestion.getString(2) + "</b></div><br>");
                         while(rsChoice.next())
                         {
