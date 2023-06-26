@@ -14,6 +14,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -79,7 +80,12 @@ public class Result extends HttpServlet {
                 dapAn = "FALSE";
             }
             int rsResult = stmtResult.executeUpdate("Exec insert_ketqua "+idCauHoi+",'"+email+"','"+dapAn+"'");
+           
+            getServletContext().setAttribute( "email", email );
             out.println("<h1>"+dapAn+"</h1>");
+            out.println(" <form action=\"question\" method=\"post\" id=\"form2\">  ");
+            out.print(" <input type=\"submit\" id=\"nextQuestion\" value=\"Next Question\">");
+            out.println("</form>");
             out.println("</body>");
             out.println("</html>");
         }
