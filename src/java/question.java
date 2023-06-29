@@ -54,10 +54,16 @@ public class question extends HttpServlet {
      String PASSWORD = "Huyho@ng432002";
      String email = request.getParameter("email");
      String part = request.getParameter("part");
+                 
      if(email == null)
      {
          ServletContext servletContext = getServletContext();
          email = servletContext.getAttribute("email").toString();
+     }
+     if(part == null)
+     {
+         ServletContext servletContext = getServletContext();
+         part = servletContext.getAttribute("part").toString();
      }
      int idCauHoi=0;
   try (PrintWriter out = response.getWriter())
@@ -85,7 +91,7 @@ public class question extends HttpServlet {
                   idCauHoi = rsQuestion.getInt(1);
                   getServletContext().setAttribute( "idCauHoi", idCauHoi );
                   getServletContext().setAttribute( "email", email );
-                  
+                   getServletContext().setAttribute( "part", part );
                  out.print(idCauHoi);
                     try (ResultSet rsChoice = stmtChoice.executeQuery("Exec get_choice "+idCauHoi)) {
                         out.println(" <h1 id=\"countdown\">35</h1>");

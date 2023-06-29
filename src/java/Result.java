@@ -59,6 +59,8 @@ public class Result extends HttpServlet {
         String dapAn = request.getParameter("dap_an");
         String email =  servletContext.getAttribute("email").toString();
          getServletContext().setAttribute( "email", email );
+           String part =  servletContext.getAttribute("part").toString();
+         getServletContext().setAttribute( "part", part );
         Integer idCauHoi = (Integer) servletContext.getAttribute("idCauHoi");
         String severNameCty = "VTNTHUCTAP";
        String DB_URL = "jdbc:sqlserver://"+severNameCty+":1433;"
@@ -71,7 +73,13 @@ public class Result extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Result</title>");            
+            out.println("<title>Servlet Result</title>"); 
+             out.println("<script>");
+            out.println(" function question()");
+            out.println("{");
+            out.println("location.replace(\"question\")");
+            out.println("}");
+            out.println("</script>");
             out.println("</head>");
             out.println("<body>");
             try (Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD)) {
@@ -84,12 +92,11 @@ public class Result extends HttpServlet {
                 stmtResult.close();
                 conn.close();
             }
-           
-           
+          
             out.println("<h1>"+dapAn+"</h1>");
-            out.println(" <form action=\"Home\" method=\"post\" id=\"form2\">  ");
-            out.print(" <input type=\"submit\" id=\"nextQuestion\" value=\"Next Question\">");
-            out.println("</form>");
+           out.println("<button onclick=\"question()\">");
+           out.println("Next question");
+           out.println("</button>");
             out.println("</body>");
             out.println("</html>");
         }
