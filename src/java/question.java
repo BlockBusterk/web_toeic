@@ -53,6 +53,7 @@ public class question extends HttpServlet {
      String USER_NAME = "sa";
      String PASSWORD = "Huyho@ng432002";
      String email = request.getParameter("email");
+     String part = request.getParameter("part");
      if(email == null)
      {
          ServletContext servletContext = getServletContext();
@@ -75,7 +76,7 @@ public class question extends HttpServlet {
             Statement stmtChoice = conn.createStatement();
             Statement stmtCount = conn.createStatement();
           
-            ResultSet rsQuestion = stmtQuestion.executeQuery("Exec get_question 5,"+"'"+email+"'");
+            ResultSet rsQuestion = stmtQuestion.executeQuery("Exec get_question "+ part +",'"+email+"'");
             
             // show data
             if (rsQuestion.next()) {
@@ -109,8 +110,8 @@ public class question extends HttpServlet {
                         out.println(" }");
                         out.println(" countdown();");
                         out.println(" </script>");
-                        out.println("<img src=\"image_sound\\41.png\" alt=\"Trulli\" width=\"500\" height=\"333\">");
-                        out.println("<audio controls>  <source src=\"image_sound\\41.MP3\" type=\"audio/mpeg\"> </audio>");
+                        out.println("<img src=\"image_sound\\41.png\" alt=\"Trulli\" width=\"500\" height=\"333\"><br>");
+                        out.println("<audio controls>  <source src=\"image_sound\\41.MP3\" type=\"audio/mpeg\">   Your browser does not support the audio element </audio>");
                         out.print("<div id=\"noidung\" name=\"noidung\"   ><b>" + rsQuestion.getString(2) + "</b></div><br>");
                         while(rsChoice.next())
                         {
@@ -144,7 +145,6 @@ public class question extends HttpServlet {
             }
                 stmtQuestion.close();
                 stmtChoice.close();
-                
                 rsQuestion.close();
                 conn.close();
                 out.println("</form>");

@@ -58,6 +58,7 @@ public class Result extends HttpServlet {
         ServletContext servletContext = getServletContext();
         String dapAn = request.getParameter("dap_an");
         String email =  servletContext.getAttribute("email").toString();
+         getServletContext().setAttribute( "email", email );
         Integer idCauHoi = (Integer) servletContext.getAttribute("idCauHoi");
         String severNameCty = "VTNTHUCTAP";
        String DB_URL = "jdbc:sqlserver://"+severNameCty+":1433;"
@@ -73,17 +74,20 @@ public class Result extends HttpServlet {
             out.println("<title>Servlet Result</title>");            
             out.println("</head>");
             out.println("<body>");
-             Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD);
-            Statement stmtResult = conn.createStatement();
-            if(dapAn == null)
-            {
-                dapAn = "FALSE";
+            try (Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD)) {
+                Statement stmtResult = conn.createStatement();
+                if(dapAn == null)
+                {
+                    dapAn = "FALSE";
+                }
+                int rsResult = stmtResult.executeUpdate("Exec insert_ketqua "+idCauHoi+",'"+email+"','"+dapAn+"'");
+                stmtResult.close();
+                conn.close();
             }
-            int rsResult = stmtResult.executeUpdate("Exec insert_ketqua "+idCauHoi+",'"+email+"','"+dapAn+"'");
            
-            getServletContext().setAttribute( "email", email );
+           
             out.println("<h1>"+dapAn+"</h1>");
-            out.println(" <form action=\"question\" method=\"post\" id=\"form2\">  ");
+            out.println(" <form action=\"Home\" method=\"post\" id=\"form2\">  ");
             out.print(" <input type=\"submit\" id=\"nextQuestion\" value=\"Next Question\">");
             out.println("</form>");
             out.println("</body>");

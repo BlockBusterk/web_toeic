@@ -65,7 +65,8 @@ public class Login extends HttpServlet {
             ResultSet rs = stmt.executeQuery("EXEC check_login '"+email+"','"+pass+"'");
             // show data
             if (rs.next()) {
-                response.sendRedirect("question?email="+email);
+                getServletContext().setAttribute( "email", email );
+                response.sendRedirect("Home");
                 stmt.close();
                 rs.close();
                 conn.close();
