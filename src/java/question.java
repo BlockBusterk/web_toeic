@@ -72,10 +72,16 @@ public class question extends HttpServlet {
        out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet NewServlet</title>");            
+            out.println("<title>Servlet NewServlet</title>"); 
+            out.println("<script>");
+             out.println(" function Back()");
+            out.println("{");
+            out.println("location.replace(\"Home\")");
+            out.println("}");
+            out.println("</script>");
             out.println("</head>");
             out.println("<body>");
-            out.println(" <form action=\"Result\" method=\"post\" id=\"form1\">  ");
+           
             Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD);
             // crate statement
             Statement stmtQuestion = conn.createStatement();
@@ -94,6 +100,7 @@ public class question extends HttpServlet {
                    getServletContext().setAttribute( "part", part );
                  out.print(idCauHoi);
                     try (ResultSet rsChoice = stmtChoice.executeQuery("Exec get_choice "+idCauHoi)) {
+                         out.println(" <form action=\"Result\" method=\"post\" id=\"form1\">  ");
                         out.println(" <h1 id=\"countdown\">35</h1>");
                        
                         out.println("  <script type=\"text/javascript\">");
@@ -140,9 +147,13 @@ public class question extends HttpServlet {
                         }//
                         
                         out.print(" <input type=\"submit\" id=\"submitQuiz\" value=\"Submit\">");
+                         out.println("</form>");
                     }
             }else {
                      out.println("<h1>Da vuot qua so cau hoi trong ngay</h1>");
+                      out.println("<button onclick=\"Back()\">");
+                      out.println("Return Home");
+                     out.println("</button>");
                 }
             }
             
@@ -153,7 +164,6 @@ public class question extends HttpServlet {
                 stmtChoice.close();
                 rsQuestion.close();
                 conn.close();
-                out.println("</form>");
                 out.println("</body>");
             out.println("</html>");
            

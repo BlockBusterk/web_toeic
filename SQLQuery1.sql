@@ -22,10 +22,11 @@ CREATE TABLE ket_qua (
   cauhoibaithithuid int,
   email varchar(255),
   ngaylambai date,
-  dungsai varchar(10),
+  dungsai bit,
+  part int,
   primary key(cauhoibaithithuid,email,ngaylambai),
  CONSTRAINT fk_cauhoibaithithuid_ketqua FOREIGN KEY (cauhoibaithithuid) REFERENCES cau_hoi_bai_thi_thu (cauhoibaithithuid) ON DELETE CASCADE,
- CONSTRAINT fk_email_nguoidung FOREIGN KEY (email) REFERENCES nguoi_dung (email) ON DELETE CASCADE
+ CONSTRAINT fk_email_nguoidung FOREIGN KEY (email) REFERENCES nguoi_dung (email) ON DELETE CASCADE,
 )
 
 CREATE TABLE cau_hoi_bai_thi_thu (
@@ -78,7 +79,7 @@ Create procedure check_login
     WHERE     cauhoibaithithuid= @idcauhoi
     if @num < 5
     begin
-    insert into ket_qua(cauhoibaithithuid,email,ngaylambai) values (@idcauhoi,@email,CAST( GETDATE() AS Date))
+    insert into ket_qua(cauhoibaithithuid,email,ngaylambai,part) values (@idcauhoi,@email,CAST( GETDATE() AS Date),@part)
     end
 	end
 delete from ket_qua
@@ -105,5 +106,19 @@ Create procedure insert_ketqua
 	go
 DBCC CHECKIDENT ('[cau_hoi_bai_thi_thu]', RESEED, 0);
 GO
+
 delete from ket_qua
-select * from ket_qua
+select * from cau_hoi_bai_thi_thu
+select *from ket_qua 
+go
+Create procedure diem_ngay(
+@email varchar (50)
+)
+as
+begin
+  select part,COUNT(email) from ket_qua where email = @email and dungsai = 1 and ngaylambai = CAST(GetDate() as DATE) group by part
+end
+
+select  part,COUNT(email)
+from ket_qua
+where email='h@gmail.com' and dungsai = 1 and  ngaylambai = CAST(GetDate() as DATE) group by part

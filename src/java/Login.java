@@ -66,7 +66,7 @@ public class Login extends HttpServlet {
             // show data
             if (rs.next()) {
                 getServletContext().setAttribute( "email", email );
-                response.sendRedirect("Home");
+                response.sendRedirect("Home?email="+email);
                 stmt.close();
                 rs.close();
                 conn.close();

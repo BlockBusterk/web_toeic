@@ -6,6 +6,13 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,10 +34,33 @@ public class Home extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
-     */
+     */ public static Connection getConnection(String dbURL, String userName, 
+            String password) {
+        Connection conn = null;
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            conn = DriverManager.getConnection(dbURL, userName, password);
+            System.out.println("connect successfully!");
+        } catch (Exception ex) {
+            System.out.println("connect failure!");
+            ex.printStackTrace();
+        }
+        return conn;
+    }
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
+        String severNameCty = "VTNTHUCTAP";
+       String DB_URL = "jdbc:sqlserver://"+severNameCty+":1433;"
+            + "databaseName=web_toeic"
+            +   ";encrypt=true;trustServerCertificate=true;";
+     String USER_NAME = "sa";
+     String PASSWORD = "Huyho@ng432002";
+     String email = request.getParameter("email");
+      Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD);
+            // crate statement
+      Statement stmtToday = conn.createStatement();
+      ResultSet rsToday = stmtToday.executeQuery("Exec diem_ngay "+ "'"+email+"'");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
@@ -46,73 +76,77 @@ public class Home extends HttpServlet {
             out.println("location.replace(\"question?part=\"+x.parentElement.rowIndex)");
             out.println("}");
             out.println("</script>");
+            out.println("<link rel=\"stylesheet\" href=\"styles/home.css\">");
             out.println("</head>");
             out.println("<body>");
             out.println("<table style=\"width:100%\">");
             out.println("<tr>");
-            out.println("<th bgcolor=\"green\" style=\"color:white; font-size:12pt;\">Part</th>");
-            out.println("<th bgcolor=\"green\" style=\"color:white; font-size:12pt;\">Today</th>");
-            out.println("<th bgcolor=\"green\" style=\"color:white; font-size:12pt;\">Sum</th>");
-            out.println("<th bgcolor=\"green\" style=\"color:white; font-size:12pt;\">Fight</th>");
-            out.println("<th bgcolor=\"green\" style=\"color:white; font-size:12pt;\">Help</th>");
+            out.println("<th>Part</th>");
+            out.println("<th>Today</th>");
+            out.println("<th>Sum</th>");
+            out.println("<th>Fight</th>");
+            out.println("<th>Help</th>");
             out.println("</tr>");
             out.println("<tr>");
             out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 1</td>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">0</td>");
+            out.println("<td id=\"today_part1\"; style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 1</u><em/></td>");
             out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 1</u></em></td>");
             out.println("</tr>");
              out.println("<tr>");
             out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 2</td>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">0</td>");
+            out.println("<td id=\"today_part2\"; style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td  onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 2</u><em/></td>");
             out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 2</u></em></td>");
             out.println("</tr>");
             out.println("<tr>");
             out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 3</td>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">0</td>");
+            out.println("<td id=\"today_part3\"; style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 3</u><em/></td>");
             out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 3</u></em></td>");
             out.println("</tr>");
              out.println("<tr>");
             out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 4</td>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">0</td>");
+            out.println("<td id=\"today_part4\"; style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 4</u><em/></td>");
             out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 4</u></em></td>");
             out.println("</tr>");
              out.println("<tr>");
             out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 5</td>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">0</td>");
+            out.println("<td id=\"today_part5\"; style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 5</u><em/></td>");
             out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 5</u></em></td>");
             out.println("</tr>");
             out.println("<tr>");
             out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 6</td>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">0</td>");
+            out.println("<td id=\"today_part6\"; style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 6</u><em/></td>");
             out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 6</u></em></td>");
             out.println("</tr>");
-           out.println("<tr>");
+            out.println("<tr>");
             out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 7A</td>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">0</td>");
+            out.println("<td id=\"today_part7\"; style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 7A</u><em/></td>");
             out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 7A</u></em></td>");
             out.println("</tr>");
             out.println("<tr>");
             out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 7B</td>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">0</td>");
+            out.println("<td id=\"today_part8\"; style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
             out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 7B</u><em/></td>");
             out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 7B</u></em></td>");
             out.println("</tr>");
             out.println("</table>");
+            out.println("  <script type=\"text/javascript\">");
+            
+            out.println(" </script>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -130,7 +164,11 @@ public class Home extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+         try {
+             processRequest(request, response);
+         } catch (SQLException ex) {
+             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+         }
     }
 
     /**
@@ -144,7 +182,11 @@ public class Home extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+         try {
+             processRequest(request, response);
+         } catch (SQLException ex) {
+             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+         }
     }
 
     /**
