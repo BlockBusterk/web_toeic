@@ -80,6 +80,12 @@ public class Result extends HttpServlet {
             out.println("location.replace(\"question\")");
             out.println("}");
             out.println("</script>");
+             out.println("<script>");
+            out.println(" function Home()");
+            out.println("{");
+            out.println("location.replace(\"Home\")");
+            out.println("}");
+            out.println("</script>");
             out.println("</head>");
             out.println("<body>");
             try (Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD)) {
@@ -96,6 +102,9 @@ public class Result extends HttpServlet {
             out.println("<h1>"+dapAn+"</h1>");
            out.println("<button onclick=\"question()\">");
            out.println("Next question");
+           out.println("</button>");
+           out.println("<button onclick=\"Home()\">");
+           out.println("Return Home");
            out.println("</button>");
             out.println("</body>");
             out.println("</html>");
