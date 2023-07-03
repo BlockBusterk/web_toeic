@@ -59,8 +59,7 @@ public class Home extends HttpServlet {
      String email = request.getParameter("email");
       Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD);
             // crate statement
-      Statement stmtToday = conn.createStatement();
-      ResultSet rsToday = stmtToday.executeQuery("Exec diem_ngay "+ "'"+email+"'");
+      
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
@@ -88,64 +87,37 @@ public class Home extends HttpServlet {
             out.println("<th>Help</th>");
             out.println("</tr>");
             out.println("<tr>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 1</td>");
-            out.println("<td id=\"today_part1\"; style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 1</u><em/></td>");
-            out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 1</u></em></td>");
+            for (int i=1;i<=8;i++)
+            {
+                int diem =0;
+                int diem_thang=0;
+                Statement stmtToday = conn.createStatement();
+                Statement stmtMonth = conn.createStatement();
+                ResultSet rsToday = stmtToday.executeQuery("Exec diem_ngay " + "'" + email + "', "+i);
+                ResultSet rsMonth = stmtMonth.executeQuery("Exec diem_thang " + "'" + email + "', "+i);
+                while (rsToday.next()) {
+                            diem = rsToday.getInt(1);
+                }
+                 while (rsMonth.next()) {
+                            diem_thang = rsMonth.getInt(1);
+                }
+            out.println("<td  style=\"text-align: center; font-size:12pt;\">Part "+i+"</td>");
+            out.println("<td id=\"today_part1\"; style=\"text-align: center; font-size:12pt;\">"+diem+"</td>");
+            out.println("<td style=\"text-align: center; font-size:12pt;\">"+diem_thang+"</td>");
+            out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part "+i+"</u><em/></td>");
+            out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part "+i+"</u></em></td>");
             out.println("</tr>");
-             out.println("<tr>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 2</td>");
-            out.println("<td id=\"today_part2\"; style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td  onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 2</u><em/></td>");
-            out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 2</u></em></td>");
-            out.println("</tr>");
-            out.println("<tr>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 3</td>");
-            out.println("<td id=\"today_part3\"; style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 3</u><em/></td>");
-            out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 3</u></em></td>");
-            out.println("</tr>");
-             out.println("<tr>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 4</td>");
-            out.println("<td id=\"today_part4\"; style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 4</u><em/></td>");
-            out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 4</u></em></td>");
-            out.println("</tr>");
-             out.println("<tr>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 5</td>");
-            out.println("<td id=\"today_part5\"; style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 5</u><em/></td>");
-            out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 5</u></em></td>");
-            out.println("</tr>");
-            out.println("<tr>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 6</td>");
-            out.println("<td id=\"today_part6\"; style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 6</u><em/></td>");
-            out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 6</u></em></td>");
-            out.println("</tr>");
-            out.println("<tr>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 7A</td>");
-            out.println("<td id=\"today_part7\"; style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 7A</u><em/></td>");
-            out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 7A</u></em></td>");
-            out.println("</tr>");
-            out.println("<tr>");
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">Part 7B</td>");
-            out.println("<td id=\"today_part8\"; style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td style=\"text-align: center; font-size:12pt;\">0</td>");
-            out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part 7B</u><em/></td>");
-            out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part 7B</u></em></td>");
-            out.println("</tr>");
+            stmtToday.close();
+            rsToday.close();
+            stmtMonth.close();
+            rsMonth.close();
+            }
             out.println("</table>");
             out.println("  <script type=\"text/javascript\">");
+            out.println("function diem_today(x)");
+            out.println("{");
             
+            out.println("}");
             out.println(" </script>");
             out.println("</body>");
             out.println("</html>");

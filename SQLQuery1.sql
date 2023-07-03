@@ -112,13 +112,23 @@ select * from cau_hoi_bai_thi_thu
 select *from ket_qua 
 go
 Create procedure diem_ngay(
-@email varchar (50)
+@email varchar (50),
+@part tinyint
 )
 as
 begin
-  select part,COUNT(email) from ket_qua where email = @email and dungsai = 1 and ngaylambai = CAST(GetDate() as DATE) group by part
+  select COUNT(email) from ket_qua where email = @email and dungsai = 1 and ngaylambai = CAST(GetDate() as DATE) and part = @part
 end
-
+go
+Create procedure diem_thang(
+@email varchar (50),
+@part tinyint
+)
+as
+begin
+  select COUNT(email) from ket_qua where email = @email and dungsai = 1 and Month(ngaylambai) = Month(CAST(GetDate() as DATE)) and YEAR(ngaylambai) = Year(CAST(GetDate() as DATE)) and part = @part
+end
 select  part,COUNT(email)
 from ket_qua
 where email='h@gmail.com' and dungsai = 1 and  ngaylambai = CAST(GetDate() as DATE) group by part
+select * from ket_qua
