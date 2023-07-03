@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -57,6 +58,11 @@ public class Home extends HttpServlet {
      String USER_NAME = "sa";
      String PASSWORD = "Huyho@ng432002";
      String email = request.getParameter("email");
+      if(email == null)
+     {
+         ServletContext servletContext = getServletContext();
+         email = servletContext.getAttribute("email").toString();
+     }
       Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD);
             // crate statement
       
@@ -87,31 +93,21 @@ public class Home extends HttpServlet {
             out.println("<th>Help</th>");
             out.println("</tr>");
             out.println("<tr>");
-            for (int i=1;i<=8;i++)
-            {
-                int diem =0;
-                int diem_thang=0;
-                Statement stmtToday = conn.createStatement();
-                Statement stmtMonth = conn.createStatement();
-                ResultSet rsToday = stmtToday.executeQuery("Exec diem_ngay " + "'" + email + "', "+i);
-                ResultSet rsMonth = stmtMonth.executeQuery("Exec diem_thang " + "'" + email + "', "+i);
-                while (rsToday.next()) {
-                            diem = rsToday.getInt(1);
-                }
-                 while (rsMonth.next()) {
-                            diem_thang = rsMonth.getInt(1);
-                }
-            out.println("<td  style=\"text-align: center; font-size:12pt;\">Part "+i+"</td>");
-            out.println("<td id=\"today_part1\"; style=\"text-align: center; font-size:12pt;\">"+diem+"</td>");
-            out.println("<td style=\"text-align: center; font-size:12pt;\">"+diem_thang+"</td>");
-            out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part "+i+"</u><em/></td>");
-            out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part "+i+"</u></em></td>");
+             Statement stmtDiem = conn.createStatement();
+             ResultSet rsDiem = stmtDiem.executeQuery("Exec temp " + "'" + email + "'");
+             
+             while(rsDiem.next()){
+             {
+            out.println("<td  style=\"text-align: center; font-size:12pt;\">Part "+rsDiem.getInt(1)+"</td>");
+            out.println("<td id=\"today_part1\"; style=\"text-align: center; font-size:12pt;\">"+rsDiem.getInt(2)+"</td>");
+            out.println("<td style=\"text-align: center; font-size:12pt;\">"+rsDiem.getInt(3)+"</td>");
+            out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part "+rsDiem.getInt(1)+"</u><em/></td>");
+            out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part "+rsDiem.getInt(1)+"</u></em></td>");
             out.println("</tr>");
-            stmtToday.close();
-            rsToday.close();
-            stmtMonth.close();
-            rsMonth.close();
             }
+             }
+            stmtDiem.close();
+            rsDiem.close();
             out.println("</table>");
             out.println("  <script type=\"text/javascript\">");
             out.println("function diem_today(x)");

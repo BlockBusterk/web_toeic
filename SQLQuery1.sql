@@ -17,7 +17,7 @@ CREATE TABLE nguoi_dung(
   so_dien_thoai varchar(11) DEFAULT NULL,
   vai_tro int DEFAULT NULL,
 )
-insert into nguoi_dung(email,matkhau) values('h@gmail.com','1')
+insert into nguoi_dung(@email,matkhau) values('h@gmail.com','1')
 CREATE TABLE ket_qua (
   cauhoibaithithuid int,
   email varchar(255),
@@ -26,7 +26,7 @@ CREATE TABLE ket_qua (
   part int,
   primary key(cauhoibaithithuid,email,ngaylambai),
  CONSTRAINT fk_cauhoibaithithuid_ketqua FOREIGN KEY (cauhoibaithithuid) REFERENCES cau_hoi_bai_thi_thu (cauhoibaithithuid) ON DELETE CASCADE,
- CONSTRAINT fk_email_nguoidung FOREIGN KEY (email) REFERENCES nguoi_dung (email) ON DELETE CASCADE,
+ CONSTRAINT fk_email_nguoidung FOREIGN KEY (@email) REFERENCES nguoi_dung (@email) ON DELETE CASCADE,
 )
 
 CREATE TABLE cau_hoi_bai_thi_thu (
@@ -128,7 +128,27 @@ as
 begin
   select COUNT(email) from ket_qua where email = @email and dungsai = 1 and Month(ngaylambai) = Month(CAST(GetDate() as DATE)) and YEAR(ngaylambai) = Year(CAST(GetDate() as DATE)) and part = @part
 end
-select  part,COUNT(email)
+select  part,COUNT(email)as day
 from ket_qua
 where email='h@gmail.com' and dungsai = 1 and  ngaylambai = CAST(GetDate() as DATE) group by part
 select * from ket_qua
+go 
+Create PROCEDURE [dbo].[temp]
+	-- Add the parameters for the stored procedure here
+	@user varchar(20)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+declare @temp Table (part int, diem tinyint, diem_thang tinyint,mail varchar(20))
+declare @i int
+Set @i=1
+While @i<=8
+begin
+insert @temp Select @i,dbo.Diem_get(email,@i),dbo.Diem_thang_get(email,@i), email from nguoi_dung where email = @user
+
+Set @i=@i+1
+end
+select * from @temp
+end

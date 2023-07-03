@@ -66,6 +66,16 @@ public class question extends HttpServlet {
          part = servletContext.getAttribute("part").toString();
      }
      int idCauHoi=0;
+     int socau=0;
+    if(part.equals("1")||part.equals("2")||part.equals("5"))
+    {
+        socau=5;
+    }else if(part.equals("3")||part.equals("4")||part.equals("6")||part.equals("7"))
+    {
+        socau=1;
+    }else{
+        socau=10;
+    }
   try (PrintWriter out = response.getWriter())
   {
             // connnect to database 'testdb'
@@ -92,7 +102,7 @@ public class question extends HttpServlet {
             
             // show data
             if (rsQuestion.next()) {
-                if(rsQuestion.getInt(4)<5)
+                if(rsQuestion.getInt(4)<socau)
                 {
                   idCauHoi = rsQuestion.getInt(1);
                   getServletContext().setAttribute( "idCauHoi", idCauHoi );
