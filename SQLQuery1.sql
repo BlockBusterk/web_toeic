@@ -1,13 +1,5 @@
 CREATE DATABASE web_toeic
 
-CREATE TABLE bai_thi_thu(
-  baithithuid int IDENTITY(1,1) PRIMARY KEY NOT NULL ,
-  anhbaithithu varchar(255) DEFAULT NULL,
-  tenbaithithu varchar(20) DEFAULT NULL,
-)
-SET IDENTITY_INSERT bai_thi_thu ON
-drop table bai_thi_thu
-insert into bai_thi_thu(baithithuid) values(1)
 drop table nguoi_dung
 CREATE TABLE nguoi_dung(
   email varchar(255)  PRIMARY KEY NOT NULL,
@@ -35,8 +27,6 @@ CREATE TABLE cau_hoi_bai_thi_thu (
   image_test varchar(255) DEFAULT NULL,
   part int DEFAULT NULL,
   question varchar(255) DEFAULT NULL,
-  baithithuid int NOT NULL,
-  CONSTRAINT fk_baithithuid_cauhoi FOREIGN KEY (baithithuid) REFERENCES bai_thi_thu (baithithuid) ON DELETE CASCADE
 )
 create table lua_chon_dap_an(
   cauhoibaithithuid int ,
