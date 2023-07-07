@@ -133,9 +133,15 @@ public class question extends HttpServlet {
                         out.println(" }");
                         out.println(" countdown();");
                         out.println(" </script>");
-                        out.println("<img src=\"image_sound\\41.png\" alt=\"Trulli\" width=\"500\" height=\"333\"><br>");
-                        out.println("<audio controls>  <source src=\"image_sound\\41.MP3\" type=\"audio/mpeg\">   Your browser does not support the audio element </audio>");
+                        if(part.equals("1")||part.equals("2"))
+                        {
+                        out.println("<img src=\""+rsQuestion.getString(6)+"\" alt=\"\" width=\"500\" height=\"333\"><br>");
+                        out.println("<audio controls>  <source src=\""+rsQuestion.getString(5)+"\" type=\"audio/mpeg\">   Your browser does not support the audio element </audio><br>");
+                        }
+                        else
+                        {
                         out.print("<div id=\"noidung\" name=\"noidung\"   ><b>" + rsQuestion.getString(2) + "</b></div><br>");
+                        }
                         while(rsChoice.next())
                         {
                             switch (rsChoice.getString(2).toLowerCase()) {
@@ -170,6 +176,7 @@ public class question extends HttpServlet {
             else{
                 response.sendRedirect("index.jsp");
             }
+            
                 stmtQuestion.close();
                 stmtChoice.close();
                 rsQuestion.close();

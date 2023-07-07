@@ -58,7 +58,7 @@ Create procedure check_login
 	begin
 	Declare @num int
 	Declare @idcauhoi int
-	set @num = (select COUNT(*) from ket_qua where email = @email and ngaylambai =CAST( GETDATE() AS Date ))
+	set @num = (select COUNT(*) from ket_qua where email = @email and part=@part and ngaylambai =CAST( GETDATE() AS Date ))
      SELECT    TOP (1) @idcauhoi= cauhoibaithithuid
     FROM      cau_hoi_bai_thi_thu
     WHERE    (part = @part) and cauhoibaithithuid not in (select cauhoibaithithuid from ket_qua where email = @email and ngaylambai =CAST( GETDATE() AS Date ) )  
