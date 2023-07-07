@@ -64,8 +64,8 @@ Create procedure check_login
     WHERE    (part = @part) and cauhoibaithithuid not in (select cauhoibaithithuid from ket_qua where email = @email and ngaylambai =CAST( GETDATE() AS Date ) )  
     ORDER BY NEWID()
     
-    SELECT     cauhoibaithithuid, question, part,@num
-        FROM      cau_hoi_bai_thi_thu
+    SELECT     cauhoibaithithuid, question, part,@num,audiomp3,image_test
+    FROM      cau_hoi_bai_thi_thu
     WHERE     cauhoibaithithuid= @idcauhoi
     if @num < 5
     begin
@@ -94,7 +94,7 @@ Create procedure insert_ketqua
 	update ket_qua set dungsai = @dungsai where cauhoibaithithuid = @cauhoibaithithuid and email = @email and ngaylambai = CAST(GetDate() as DATE)
 	end
 	go
-DBCC CHECKIDENT ('[cau_hoi_bai_thi_thu]', RESEED, 0);
+DBCC CHECKIDENT ('[cau_hoi_bai_thi_thu]', RESEED, 50);
 GO
 
 delete from ket_qua
@@ -142,3 +142,15 @@ Set @i=@i+1
 end
 select * from @temp
 end
+<<<<<<< HEAD
+DECLARE @count INT;
+SET @count = 51;
+    
+WHILE @count<= 80
+BEGIN
+   insert cau_hoi_bai_thi_thu(audiomp3,image_test,part) values ('image_sound\'+Cast(@count as varchar)+'.mp3','image_sound\'+cast(@count as varchar)+'.png',1)
+   SET @count = @count + 1;
+END;
+select * from ket_qua
+delete  from ket_qua
+
