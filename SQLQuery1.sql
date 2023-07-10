@@ -9,7 +9,7 @@ CREATE TABLE nguoi_dung(
   so_dien_thoai varchar(11) DEFAULT NULL,
   vai_tro int DEFAULT NULL,
 )
-insert into nguoi_dung(@email,matkhau) values('h@gmail.com','1')
+insert into nguoi_dung(email,matkhau) values('h@gmail.com','1')
 CREATE TABLE ket_qua (
   cauhoibaithithuid int,
   email varchar(255),
@@ -18,7 +18,7 @@ CREATE TABLE ket_qua (
   part int,
   primary key(cauhoibaithithuid,email,ngaylambai),
  CONSTRAINT fk_cauhoibaithithuid_ketqua FOREIGN KEY (cauhoibaithithuid) REFERENCES cau_hoi_bai_thi_thu (cauhoibaithithuid) ON DELETE CASCADE,
- CONSTRAINT fk_email_nguoidung FOREIGN KEY (@email) REFERENCES nguoi_dung (@email) ON DELETE CASCADE,
+ CONSTRAINT fk_email_nguoidung FOREIGN KEY (email) REFERENCES nguoi_dung (email) ON DELETE CASCADE,
 )
 
 CREATE TABLE cau_hoi_bai_thi_thu (
@@ -28,6 +28,7 @@ CREATE TABLE cau_hoi_bai_thi_thu (
   part int DEFAULT NULL,
   question varchar(255) DEFAULT NULL,
 )
+
 create table lua_chon_dap_an(
   cauhoibaithithuid int ,
   choice varchar(1),
@@ -36,7 +37,7 @@ create table lua_chon_dap_an(
   primary key(cauhoibaithithuid,choice),
   CONSTRAINT fk_baithithuid_luachon FOREIGN KEY (cauhoibaithithuid) REFERENCES cau_hoi_bai_thi_thu (cauhoibaithithuid) ON DELETE CASCADE
 )
-
+delete  from cau_hoi_bai_thi_thu
 go
 Create procedure check_login
 (
@@ -94,7 +95,7 @@ Create procedure insert_ketqua
 	update ket_qua set dungsai = @dungsai where cauhoibaithithuid = @cauhoibaithithuid and email = @email and ngaylambai = CAST(GetDate() as DATE)
 	end
 	go
-DBCC CHECKIDENT ('[cau_hoi_bai_thi_thu]', RESEED, 50);
+DBCC CHECKIDENT ('[cau_hoi_bai_thi_thu]', RESEED, 80);
 GO
 
 delete from ket_qua
@@ -153,4 +154,51 @@ BEGIN
 END;
 select * from ket_qua
 delete  from ket_qua
+go
+ALTER procedure [dbo].[get_multiple_question]
+(
+    @part tinyint,
+	@email varchar(30)
+)    
+	As 
+	begin
+	Declare @num int
+	Declare @idcauhoi int
+	Declare @image_sound varchar(100)
+	declare @temp Table (cauhoibaithithuid int, question varchar(100), part tinyint,num tinyint,audiomp3 varchar(100), image_test varchar(100) )
+	set @num = (select COUNT(*) from ket_qua where email = @email and part=@part and ngaylambai =CAST( GETDATE() AS Date ))
+	
+	if @part = 3 or @part = 4
+	begin
+	select top (1) @image_sound = audiomp3
+	from cau_hoi_bai_thi_thu
+	where (part = @part) and (audiomp3 not in  (select cau_hoi_bai_thi_thu.audiomp3 from ket_qua right join cau_hoi_bai_thi_thu on ket_qua.cauhoibaithithuid = cau_hoi_bai_thi_thu.cauhoibaithithuid where email = @email and ngaylambai =CAST( GETDATE() AS Date )) or audiomp3 in (select cau_hoi_bai_thi_thu.audiomp3 from ket_qua right join cau_hoi_bai_thi_thu on ket_qua.cauhoibaithithuid = cau_hoi_bai_thi_thu.cauhoibaithithuid where email = @email and dungsai =0))
+    ORDER BY NEWID()    
 
+      while @num < 3
+    begin
+     SELECT    TOP (1) @idcauhoi= cauhoibaithithuid
+    FROM      cau_hoi_bai_thi_thu
+    WHERE    (part = @part) and audiomp3 = @image_sound and cauhoibaithithuid not in (select cauhoibaithithuid from ket_qua where email = @email and ngaylambai =CAST( GETDATE() AS Date ) )  
+    ORDER BY NEWID()
+    
+    insert @temp Select cauhoibaithithuid, question, part,@num,audiomp3,image_test FROM cau_hoi_bai_thi_thu WHERE cauhoibaithithuid= @idcauhoi 
+    
+    SELECT     cauhoibaithithuid, question, part,@num,audiomp3,image_test 
+    FROM      cau_hoi_bai_thi_thu
+    WHERE     cauhoibaithithuid= @idcauhoi  
+    insert into ket_qua(cauhoibaithithuid,email,ngaylambai,part) values (@idcauhoi,@email,CAST( GETDATE() AS Date),@part)
+    
+    set @num = (select COUNT(*) from ket_qua where email = @email and part=@part and ngaylambai =CAST( GETDATE() AS Date ))
+	end
+	end
+	select * from @temp
+	end
+	DECLARE @count INT;
+SET @count = 81;
+    
+WHILE @count<= 105
+BEGIN
+   insert cau_hoi_bai_thi_thu(audiomp3,part) values ('image_sound\'+Cast(@count as varchar)+'.mp3',2)
+   SET @count = @count + 1;
+END;
