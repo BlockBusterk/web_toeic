@@ -37,7 +37,7 @@ create table lua_chon_dap_an(
   primary key(cauhoibaithithuid,choice),
   CONSTRAINT fk_baithithuid_luachon FOREIGN KEY (cauhoibaithithuid) REFERENCES cau_hoi_bai_thi_thu (cauhoibaithithuid) ON DELETE CASCADE
 )
-delete  from cau_hoi_bai_thi_thu
+delete  from ket_qua
 go
 Create procedure check_login
 (
@@ -74,6 +74,7 @@ Create procedure check_login
     end
 	end
 delete from ket_qua
+select * from ket_qua
 go
 Create procedure get_choice
 (
@@ -95,7 +96,7 @@ Create procedure insert_ketqua
 	update ket_qua set dungsai = @dungsai where cauhoibaithithuid = @cauhoibaithithuid and email = @email and ngaylambai = CAST(GetDate() as DATE)
 	end
 	go
-DBCC CHECKIDENT ('[cau_hoi_bai_thi_thu]', RESEED, 80);
+DBCC CHECKIDENT ('[cau_hoi_bai_thi_thu]', RESEED, 123);
 GO
 
 delete from ket_qua
@@ -145,17 +146,17 @@ select * from @temp
 end
 <<<<<<< HEAD
 DECLARE @count INT;
-SET @count = 51;
+SET @count = 124;
     
-WHILE @count<= 80
+WHILE @count<= 126
 BEGIN
-   insert cau_hoi_bai_thi_thu(audiomp3,image_test,part) values ('image_sound\'+Cast(@count as varchar)+'.mp3','image_sound\'+cast(@count as varchar)+'.png',1)
+   insert cau_hoi_bai_thi_thu(audiomp3,image_test,part) values ('image_sound\'+Cast(@count as varchar)+'.mp3','image_sound\'+cast(@count as varchar)+'.png',4)
    SET @count = @count + 1;
 END;
 select * from ket_qua
 delete  from ket_qua
 go
-ALTER procedure [dbo].[get_multiple_question]
+Create procedure [dbo].[get_multiple_question]
 (
     @part tinyint,
 	@email varchar(30)
@@ -180,7 +181,7 @@ ALTER procedure [dbo].[get_multiple_question]
      SELECT    TOP (1) @idcauhoi= cauhoibaithithuid
     FROM      cau_hoi_bai_thi_thu
     WHERE    (part = @part) and audiomp3 = @image_sound and cauhoibaithithuid not in (select cauhoibaithithuid from ket_qua where email = @email and ngaylambai =CAST( GETDATE() AS Date ) )  
-    ORDER BY NEWID()
+     ORDER BY cauhoibaithithuid
     
     insert @temp Select cauhoibaithithuid, question, part,@num,audiomp3,image_test FROM cau_hoi_bai_thi_thu WHERE cauhoibaithithuid= @idcauhoi 
     

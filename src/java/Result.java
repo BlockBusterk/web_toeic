@@ -39,7 +39,7 @@ public class Result extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    public static Connection getConnection(String dbURL, String userName, 
+    public static Connection getConnection(String dbURL, String userName,
             String password) {
         Connection conn = null;
         try {
@@ -52,20 +52,21 @@ public class Result extends HttpServlet {
         }
         return conn;
     }
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
         ServletContext servletContext = getServletContext();
-        String dapAn = request.getParameter("dap_an");
-        String email =  servletContext.getAttribute("email").toString();
-         getServletContext().setAttribute( "email", email );
-           String part =  servletContext.getAttribute("part").toString();
-         getServletContext().setAttribute( "part", part );
-        Integer idCauHoi = (Integer) servletContext.getAttribute("idCauHoi");
-        String severNameCty = "VTNTHUCTAP";
-       String DB_URL = "jdbc:sqlserver://"+severNameCty+":1433;"
-            + "databaseName=web_toeic"
-            +   ";encrypt=true;trustServerCertificate=true;";
+
+        String email = servletContext.getAttribute("email").toString();
+        getServletContext().setAttribute("email", email);
+        String part = servletContext.getAttribute("part").toString();
+        getServletContext().setAttribute("part", part);
+
+        String severNameCty = "LAPTOP-AR34IMPG\\SQLEXPRESS";
+        String DB_URL = "jdbc:sqlserver://" + severNameCty + ":1433;"
+                + "databaseName=web_toeic"
+                + ";encrypt=true;trustServerCertificate=true;";
         String USER_NAME = "sa";
         String PASSWORD = "Huyho@ng432002";
         try (PrintWriter out = response.getWriter()) {
@@ -73,14 +74,14 @@ public class Result extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Result</title>"); 
-             out.println("<script>");
+            out.println("<title>Servlet Result</title>");
+            out.println("<script>");
             out.println(" function question()");
             out.println("{");
             out.println("location.replace(\"question\")");
             out.println("}");
             out.println("</script>");
-             out.println("<script>");
+            out.println("<script>");
             out.println(" function Home()");
             out.println("{");
             out.println("location.replace(\"Home\")");
@@ -88,24 +89,47 @@ public class Result extends HttpServlet {
             out.println("</script>");
             out.println("</head>");
             out.println("<body>");
-            try (Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD)) {
-                Statement stmtResult = conn.createStatement();
-                if(dapAn == null)
-                {
-                    dapAn = "FALSE";
+            if (part.equals("1") || part.equals("2") || part.equals("5")) {
+                Integer idCauHoi = (Integer) servletContext.getAttribute("idCauHoi");
+                String dapAn = request.getParameter("dap_an");
+                try (Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD)) {
+                    Statement stmtResult = conn.createStatement();
+                    if (dapAn == null) {
+                        dapAn = "FALSE";
+                    }
+                    int rsResult = stmtResult.executeUpdate("Exec insert_ketqua " + idCauHoi + ",'" + email + "','" + dapAn + "'");
+                    stmtResult.close();
+                    conn.close();
                 }
-                int rsResult = stmtResult.executeUpdate("Exec insert_ketqua "+idCauHoi+",'"+email+"','"+dapAn+"'");
-                stmtResult.close();
-                conn.close();
+
+                out.println("<h1>" + dapAn + "</h1>");
+                out.println("<button onclick=\"question()\">");
+                out.println("Next question");
+                out.println("</button>");
+
+            } else if (part.equals("3") || part.equals("4") || part.equals("6") || part.equals("7")) {
+
+                try (Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD)) {
+                    int i = 1;
+                    Statement stmtResult = conn.createStatement();
+                    while (i <= 3) {
+
+                        String dapAn = request.getParameter("dap_an" + i);
+                        if (dapAn == null) {
+                            dapAn = "FALSE";
+                        }
+                        int idCauHoi = (Integer) servletContext.getAttribute("idCauHoi" + i);
+                        int rsResult = stmtResult.executeUpdate("Exec insert_ketqua " + idCauHoi + ",'" + email + "','" + dapAn + "'");
+                        out.println("<h3>" +idCauHoi+" - "+ dapAn + "</h3><br>");
+                        i++;
+                    }
+                    stmtResult.close();
+                    conn.close();
+                }
             }
-          
-            out.println("<h1>"+dapAn+"</h1>");
-           out.println("<button onclick=\"question()\">");
-           out.println("Next question");
-           out.println("</button>");
-           out.println("<button onclick=\"Home()\">");
-           out.println("Return Home");
-           out.println("</button>");
+            out.println("<button onclick=\"Home()\">");
+            out.println("Return Home");
+            out.println("</button>");
             out.println("</body>");
             out.println("</html>");
         }
