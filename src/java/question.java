@@ -48,7 +48,7 @@ public class question extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String severNameCty = "LAPTOP-AR34IMPG\\SQLEXPRESS";
+        String severNameCty = "VTNTHUCTAP";
         String DB_URL = "jdbc:sqlserver://" + severNameCty + ":1433;"
                 + "databaseName=web_toeic"
                 + ";encrypt=true;trustServerCertificate=true;";
@@ -177,19 +177,21 @@ public class question extends HttpServlet {
 
                 stmtQuestion.executeQuery("Exec get_multiple_question " + part + ",'" + email + "'");
                 ResultSet rsQuestion = stmtQuestion.getResultSet();
+                
                 if (rsQuestion.next()) {
-                    stmtQuestion.getMoreResults();
-                    rsQuestion = stmtQuestion.getResultSet();
-                       stmtQuestion.getMoreResults();
-                            rsQuestion = stmtQuestion.getResultSet();
                     // show data
-                    if (rsQuestion.next()) {
+                    
+                        out.print(rsQuestion.getInt(4));
                         if (rsQuestion.getInt(4) < socau) {
-
                             getServletContext().setAttribute("email", email);
                             getServletContext().setAttribute("part", part);
-                             out.println(" <form action=\"Result\" method=\"post\" id=\"form1\">  ");
-                            out.println(" <h1 id=\"countdown\">85</h1>");
+                            out.println(" <form action=\"Result\" method=\"post\" id=\"form1\">  ");
+                            if (part.equals("3") || part.equals("4")) {
+                                out.println(" <h1 id=\"countdown\">85</h1>");
+                            }
+                            if (part.equals("6") || part.equals("7")) {
+                                out.println(" <h1 id=\"countdown\">300</h1>");
+                            }
                             out.println("  <script type=\"text/javascript\">");
                             out.println(" var seconds;");
                             out.println(" var temp;");
@@ -210,30 +212,47 @@ public class question extends HttpServlet {
                             out.println(" }");
                             out.println(" countdown();");
                             out.println(" </script>");
-                            out.println("<audio controls>  <source src=\"" + rsQuestion.getString(5) + "\" type=\"audio/mpeg\">   Your browser does not support the audio element </audio><br>");
-                           
-                            stmtQuestion.getMoreResults();
-
+                            if (part.equals("3") || part.equals("4")) {
+                                out.println("<audio controls>  <source src=\"" + rsQuestion.getString(5) + "\" type=\"audio/mpeg\">   Your browser does not support the audio element </audio><br>");
+                            }
+                            if (part.equals("6") || part.equals("7")) {
+                                out.println("<img src=\"" + rsQuestion.getString(6) + "\" alt=\"\" width=\"600\" height=\"100%\"><br>");
+                            }
+                            out.print(rsQuestion.getInt(7));
+                            int limit = rsQuestion.getInt(7);
+                            for(int k=1;k<=limit;k++)
+                            {
+                             stmtQuestion.getMoreResults();
                             rsQuestion = stmtQuestion.getResultSet();
+                            
+                            }
+                            
                             int i = 1;
-                            while (rsQuestion.next()) {
+                             while (rsQuestion.next()) {
                                 idCauHoi = rsQuestion.getInt(1);
                                 getServletContext().setAttribute("idCauHoi" + i, idCauHoi);
+                                if(part.equals("3") || part.equals("4")||part.equals("7"))
+                                {
                                 out.print("<div id=\"noidung\" name=\"noidung\"   ><b>" + idCauHoi + " " + rsQuestion.getString(2) + "</b></div><br>");
+                                }
+                                if(part.equals("6") )
+                                {
+                                out.print("<div id=\"noidung\" name=\"noidung\"   ><b>" + idCauHoi  + "</b></div><br>");
+                                }
                                 ResultSet rsChoice = stmtChoice.executeQuery("Exec get_choice " + idCauHoi);
                                 while (rsChoice.next()) {
                                     switch (rsChoice.getString(2).toLowerCase()) {
                                         case "a":
-                                            out.print("<input type=\"radio\"  name=\"dap_an"+i+"\" value=\"" + rsChoice.getString(4) + "\">" + "A) " + rsChoice.getString(3) + "</div><br><br>");
+                                            out.print("<input type=\"radio\"  name=\"dap_an" + i + "\" value=\"" + rsChoice.getString(4) + "\">" + "A) " + rsChoice.getString(3) + "</div><br><br>");
                                             break;
                                         case "b":
-                                            out.print("<input type=\"radio\"  name=\"dap_an"+i+"\" value=\"" + rsChoice.getString(4) + "\">" + "B) " + rsChoice.getString(3) + "</div><br><br>");
+                                            out.print("<input type=\"radio\"  name=\"dap_an" + i + "\" value=\"" + rsChoice.getString(4) + "\">" + "B) " + rsChoice.getString(3) + "</div><br><br>");
                                             break;
                                         case "c":
-                                            out.print("<input type=\"radio\"  name=\"dap_an"+i+"\" value=\"" + rsChoice.getString(4) + "\">" + "C) " + rsChoice.getString(3) + "</div><br><br>");
+                                            out.print("<input type=\"radio\"  name=\"dap_an" + i + "\" value=\"" + rsChoice.getString(4) + "\">" + "C) " + rsChoice.getString(3) + "</div><br><br>");
                                             break;
                                         case "d":
-                                            out.print("<input type=\"radio\"  name=\"dap_an"+i+"\" value=\"" + rsChoice.getString(4) + "\">" + "D) " + rsChoice.getString(3) + "</div><br><br>");
+                                            out.print("<input type=\"radio\"  name=\"dap_an" + i + "\" value=\"" + rsChoice.getString(4) + "\">" + "D) " + rsChoice.getString(3) + "</div><br><br>");
                                             break;
                                         default:
                                             break;
@@ -241,7 +260,7 @@ public class question extends HttpServlet {
                                 }
                                 i++;
                             }//
-
+                           getServletContext().setAttribute("countQuestion" , i);
                             stmtQuestion.close();
                             stmtChoice.close();
                             rsQuestion.close();
@@ -249,7 +268,7 @@ public class question extends HttpServlet {
                             out.print(" <input type=\"submit\" id=\"submitQuiz\" value=\"Submit\">");
                             out.println("</form>");
                         }
-                    }
+                    
                 } else {
                     out.println("<h1>Da vuot qua so cau hoi trong ngay</h1>");
                     out.println("<button onclick=\"Back()\">");

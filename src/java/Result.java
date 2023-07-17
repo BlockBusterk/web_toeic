@@ -63,7 +63,7 @@ public class Result extends HttpServlet {
         String part = servletContext.getAttribute("part").toString();
         getServletContext().setAttribute("part", part);
 
-        String severNameCty = "LAPTOP-AR34IMPG\\SQLEXPRESS";
+        String severNameCty = "VTNTHUCTAP";
         String DB_URL = "jdbc:sqlserver://" + severNameCty + ":1433;"
                 + "databaseName=web_toeic"
                 + ";encrypt=true;trustServerCertificate=true;";
@@ -111,8 +111,11 @@ public class Result extends HttpServlet {
 
                 try (Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD)) {
                     int i = 1;
+                    int count=0;
+                    count = (Integer) servletContext.getAttribute("countQuestion");
+                    
                     Statement stmtResult = conn.createStatement();
-                    while (i <= 3) {
+                    while (i < count) {
 
                         String dapAn = request.getParameter("dap_an" + i);
                         if (dapAn == null) {
