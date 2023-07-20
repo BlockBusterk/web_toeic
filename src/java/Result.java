@@ -63,7 +63,7 @@ public class Result extends HttpServlet {
         String part = servletContext.getAttribute("part").toString();
         getServletContext().setAttribute("part", part);
 
-        String severNameCty = "VTNTHUCTAP";
+        String severNameCty = "LAPTOP-AR34IMPG\\SQLEXPRESS";
         String DB_URL = "jdbc:sqlserver://" + severNameCty + ":1433;"
                 + "databaseName=web_toeic"
                 + ";encrypt=true;trustServerCertificate=true;";
@@ -107,7 +107,42 @@ public class Result extends HttpServlet {
                 out.println("Next question");
                 out.println("</button>");
 
-            } else if (part.equals("3") || part.equals("4") || part.equals("6") || part.equals("7")) {
+            } else if(part.equals("8"))
+            {
+                Integer idCauHoi = (Integer) servletContext.getAttribute("idCauHoi");
+                Integer socaudung = (Integer) servletContext.getAttribute("socaudung");
+                String dapAn = "FALSE";
+                String choices [] = request.getParameterValues("dap_an");
+                try (Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD)) {
+                    Statement stmtResult = conn.createStatement();
+                    if (choices.length==0||choices==null) {
+                        dapAn = "FALSE";
+                    }else
+                    {
+                        int i=0;
+                        for(String s: choices)
+                        {
+                            if(s.equals("TRUE"))
+                            {
+                                i++;
+                            }
+                        }
+                        if(i==socaudung)
+                        {
+                            dapAn = "TRUE";
+                        }
+                    }
+                    int rsResult = stmtResult.executeUpdate("Exec insert_ketqua " + idCauHoi + ",'" + email + "','" + dapAn + "'");
+                    stmtResult.close();
+                    conn.close();
+                }
+
+                out.println("<h1>" + dapAn + "</h1>");
+                out.println("<button onclick=\"question()\">");
+                out.println("Next question");
+                out.println("</button>");
+            }
+            else if (part.equals("3") || part.equals("4") || part.equals("6") || part.equals("7")) {
 
                 try (Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD)) {
                     int i = 1;

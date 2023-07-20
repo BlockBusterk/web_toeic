@@ -48,7 +48,7 @@ public class question extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String severNameCty = "VTNTHUCTAP";
+        String severNameCty = "LAPTOP-AR34IMPG\\SQLEXPRESS";
         String DB_URL = "jdbc:sqlserver://" + severNameCty + ":1433;"
                 + "databaseName=web_toeic"
                 + ";encrypt=true;trustServerCertificate=true;";
@@ -173,7 +173,73 @@ public class question extends HttpServlet {
                         conn.close();
                     }
                 }
-            } else if (part.equals("3") || part.equals("4") || part.equals("6") || part.equals("7")) {
+            } else if(part.equals("8"))
+            {
+                 ResultSet rsQuestion = stmtQuestion.executeQuery("Exec get_question " + part + ",'" + email + "'");
+
+                // show data
+                while (rsQuestion.next()) {
+                    if (rsQuestion.getInt(4) < socau) {
+                        idCauHoi = rsQuestion.getInt(1);
+                        getServletContext().setAttribute("idCauHoi", idCauHoi);
+                        getServletContext().setAttribute("email", email);
+                        getServletContext().setAttribute("part", part);
+                        out.print(idCauHoi);
+                        try (ResultSet rsChoice = stmtChoice.executeQuery("Exec get_choice_vocab " + idCauHoi)) {
+                            out.println(" <form action=\"Result\" method=\"post\" id=\"form1\">  ");
+                            out.println(" <h1 id=\"countdown\">35</h1>");
+
+                            out.println("  <script type=\"text/javascript\">");
+                            out.println(" var seconds;");
+                            out.println(" var temp;");
+                            out.println(" function countdown()");
+                            out.println(" {");
+                            out.println(" seconds=document.getElementById('countdown').innerHTML;");
+                            out.println(" seconds=parseInt(seconds,10);");
+                            out.println(" if (seconds<=0)");
+                            out.println("     {");
+                            out.println(" temp=document.getElementById('countdown');");
+                            out.println(" temp.innerHTML=\"all done\";");
+                            out.println(" document.getElementById('form1').submit();");
+                            out.println(" }");
+                            out.println(" seconds--;");
+                            out.println(" temp=document.getElementById('countdown');");
+                            out.println(" temp.innerHTML=seconds;");
+                            out.println(" setTimeout(countdown,1000);");
+                            out.println(" }");
+                            out.println(" countdown();");
+                            out.println(" </script>");
+                           
+                              out.println(" <h3>Choose the synonym</h3><br>");
+                            int i=0;
+                            while (rsChoice.next()) {
+                                        out.print("<input type=\"checkbox\"  name=\"dap_an\" value=\"" + rsChoice.getString(4) + "\">" + rsChoice.getString(3) + "</div><br><br>");
+                                        if(rsChoice.getString(4).equals("TRUE"))
+                                        {
+                                            i++;
+                                        }
+                            }//
+                            getServletContext().setAttribute("socaudung", i);
+                            stmtQuestion.close();
+                            stmtChoice.close();
+                            rsQuestion.close();
+                            conn.close();
+                            out.print(" <input type=\"submit\" id=\"submitQuiz\" value=\"Submit\">");
+                            out.println("</form>");
+                        }
+                    } else {
+                        out.println("<h1>Da vuot qua so cau hoi trong ngay</h1>");
+                        out.println("<button onclick=\"Back()\">");
+                        out.println("Return Home");
+                        out.println("</button>");
+                        stmtQuestion.close();
+                        stmtChoice.close();
+                        rsQuestion.close();
+                        conn.close();
+                    }
+                }
+            }
+            else if (part.equals("3") || part.equals("4") || part.equals("6") || part.equals("7")) {
 
                 stmtQuestion.executeQuery("Exec get_multiple_question " + part + ",'" + email + "'");
                 ResultSet rsQuestion = stmtQuestion.getResultSet();
@@ -182,7 +248,7 @@ public class question extends HttpServlet {
                     // show data
                     
                         out.print(rsQuestion.getInt(4));
-                        if (rsQuestion.getInt(4) < socau) {
+                        if (rsQuestion.getInt(4) ==0) {
                             getServletContext().setAttribute("email", email);
                             getServletContext().setAttribute("part", part);
                             out.println(" <form action=\"Result\" method=\"post\" id=\"form1\">  ");
@@ -267,7 +333,16 @@ public class question extends HttpServlet {
                             conn.close();
                             out.print(" <input type=\"submit\" id=\"submitQuiz\" value=\"Submit\">");
                             out.println("</form>");
-                        }
+                        }else {
+                    out.println("<h1>Da vuot qua so cau hoi trong ngay</h1>");
+                    out.println("<button onclick=\"Back()\">");
+                    out.println("Return Home");
+                    out.println("</button>");
+                    stmtQuestion.close();
+                    stmtChoice.close();
+                    rsQuestion.close();
+                    conn.close();
+                }
                     
                 } else {
                     out.println("<h1>Da vuot qua so cau hoi trong ngay</h1>");

@@ -85,6 +85,15 @@ Create procedure get_choice
 	begin
 	select * from lua_chon_dap_an where cauhoibaithithuid = @idQuestion
 	end
+	Create procedure get_choice_vocab
+(
+	@idQuestion int
+)
+	As
+	begin
+	select * from lua_chon_dap_an where cauhoibaithithuid = @idQuestion
+	order by newID()
+	end
 	go
 Create procedure insert_ketqua
 (
@@ -247,7 +256,8 @@ ALTER procedure [dbo].[get_multiple_question]
 	Declare @countQuestion int
 	declare @temp Table (cauhoibaithithuid int, question varchar(255), part tinyint,num tinyint,audiomp3 varchar(100), image_test varchar(100))
 	set @num = (select COUNT(*) from ket_qua where email = @email and part=@part and ngaylambai =CAST( GETDATE() AS Date ))
-	
+	if @num=0
+	begin
 	if @part = 3 or @part = 4
 	begin
 	
@@ -327,5 +337,15 @@ ALTER procedure [dbo].[get_multiple_question]
     set @num = (select COUNT(*) from ket_qua where email = @email and part=@part and ngaylambai =CAST( GETDATE() AS Date ))
 	end
 	end
+	end
 	select * from @temp
+	end
+	ALTER procedure [dbo].[get_choice_vocab]
+(
+	@idQuestion int
+)
+	As
+	begin
+	select * from lua_chon_dap_an where cauhoibaithithuid = @idQuestion
+	order by newID()
 	end
