@@ -47,7 +47,7 @@ public class Login extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String severNameCty = "LAPTOP-AR34IMPG\\SQLEXPRESS";
+        String severNameCty = "VTNTHUCTAP";
        String DB_URL = "jdbc:sqlserver://"+severNameCty+":1433;"
             + "databaseName=web_toeic"
             +   ";encrypt=true;trustServerCertificate=true;";

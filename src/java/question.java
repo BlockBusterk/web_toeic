@@ -48,7 +48,7 @@ public class question extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String severNameCty = "LAPTOP-AR34IMPG\\SQLEXPRESS";
+        String severNameCty = "VTNTHUCTAP";
         String DB_URL = "jdbc:sqlserver://" + severNameCty + ":1433;"
                 + "databaseName=web_toeic"
                 + ";encrypt=true;trustServerCertificate=true;";
@@ -67,7 +67,7 @@ public class question extends HttpServlet {
         }
         int idCauHoi = 0;
         int socau = 0;
-        if (part.equals("1") || part.equals("2") || part.equals("5")) {
+        if (part.equals("1") || part.equals("2") || part.equals("5")||part.equals("8")) {
             socau = 5;
         } else if (part.equals("3") || part.equals("4") || part.equals("6") || part.equals("7")) {
             socau = 3;
@@ -185,7 +185,7 @@ public class question extends HttpServlet {
                         getServletContext().setAttribute("email", email);
                         getServletContext().setAttribute("part", part);
                         out.print(idCauHoi);
-                        try (ResultSet rsChoice = stmtChoice.executeQuery("Exec get_choice_vocab " + idCauHoi)) {
+                       ResultSet rsChoice = stmtChoice.executeQuery("Exec get_choice_vocab " + idCauHoi);
                             out.println(" <form action=\"Result\" method=\"post\" id=\"form1\">  ");
                             out.println(" <h1 id=\"countdown\">35</h1>");
 
@@ -226,7 +226,6 @@ public class question extends HttpServlet {
                             conn.close();
                             out.print(" <input type=\"submit\" id=\"submitQuiz\" value=\"Submit\">");
                             out.println("</form>");
-                        }
                     } else {
                         out.println("<h1>Da vuot qua so cau hoi trong ngay</h1>");
                         out.println("<button onclick=\"Back()\">");

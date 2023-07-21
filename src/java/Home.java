@@ -51,7 +51,7 @@ public class Home extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
-        String severNameCty = "LAPTOP-AR34IMPG\\SQLEXPRESS";
+        String severNameCty = "VTNTHUCTAP";
        String DB_URL = "jdbc:sqlserver://"+severNameCty+":1433;"
             + "databaseName=web_toeic"
             +   ";encrypt=true;trustServerCertificate=true;";
@@ -72,16 +72,13 @@ public class Home extends HttpServlet {
             out.println("<html>");
             out.println("<head>");
             out.println("<title>Servlet Home</title>");
-            out.println("<style>");
-            out.println("table, th, td {\n" +"  border:1px solid black;\n" +"}");
-            out.println("</style>");
+            out.println("<link rel=\"stylesheet\" href=\"styles/home.css\">");
             out.println("<script>");
             out.println(" function question(x)");
             out.println("{");
             out.println("location.replace(\"question?part=\"+x.parentElement.rowIndex)");
             out.println("}");
             out.println("</script>");
-            out.println("<link rel=\"stylesheet\" href=\"styles/home.css\">");
             out.println("</head>");
             out.println("<body>");
             out.println("<table style=\"width:100%\">");
@@ -102,7 +99,7 @@ public class Home extends HttpServlet {
             out.println("<td id=\"today_part1\"; style=\"text-align: center; font-size:12pt;\">"+rsDiem.getInt(2)+"</td>");
             out.println("<td style=\"text-align: center; font-size:12pt;\">"+rsDiem.getInt(3)+"</td>");
             out.println("<td onclick=\"question(this)\" style=\"text-align: center;color:brown; font-size:11pt;\"><em><u>Test Part "+rsDiem.getInt(1)+"</u><em/></td>");
-            out.println("<td  style=\"text-align: center;color:gray; font-size:11pt;\"><em><u>Hint for part "+rsDiem.getInt(1)+"</u></em></td>");
+            out.println("<td  style=\"text-align: center;color:gray; font-size:12pt;\"><em><u>Hint for part "+rsDiem.getInt(1)+"</u></em></td>");
             out.println("</tr>");
             }
              }

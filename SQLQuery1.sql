@@ -196,45 +196,7 @@ END;
 select * from ket_qua
 delete  from ket_qua
 go
-Create procedure [dbo].[get_multiple_question]
-(
-    @part tinyint,
-	@email varchar(30)
-)    
-	As 
-	begin
-	Declare @num int
-	Declare @idcauhoi int
-	Declare @image_sound varchar(100)
-	declare @temp Table (cauhoibaithithuid int, question varchar(100), part tinyint,num tinyint,audiomp3 varchar(100), image_test varchar(100) )
-	set @num = (select COUNT(*) from ket_qua where email = @email and part=@part and ngaylambai =CAST( GETDATE() AS Date ))
-	
-	if @part = 3 or @part = 4
-	begin
-	select top (1) @image_sound = audiomp3
-	from cau_hoi_bai_thi_thu
-	where (part = @part) and (audiomp3 not in  (select cau_hoi_bai_thi_thu.audiomp3 from ket_qua right join cau_hoi_bai_thi_thu on ket_qua.cauhoibaithithuid = cau_hoi_bai_thi_thu.cauhoibaithithuid where email = @email and ngaylambai =CAST( GETDATE() AS Date )) or audiomp3 in (select cau_hoi_bai_thi_thu.audiomp3 from ket_qua right join cau_hoi_bai_thi_thu on ket_qua.cauhoibaithithuid = cau_hoi_bai_thi_thu.cauhoibaithithuid where email = @email and dungsai =0))
-    ORDER BY NEWID()    
 
-      while @num < 3
-    begin
-     SELECT    TOP (1) @idcauhoi= cauhoibaithithuid
-    FROM      cau_hoi_bai_thi_thu
-    WHERE    (part = @part) and audiomp3 = @image_sound and cauhoibaithithuid not in (select cauhoibaithithuid from ket_qua where email = @email and ngaylambai =CAST( GETDATE() AS Date ) )  
-     ORDER BY cauhoibaithithuid
-    
-    insert @temp Select cauhoibaithithuid, question, part,@num,audiomp3,image_test FROM cau_hoi_bai_thi_thu WHERE cauhoibaithithuid= @idcauhoi 
-    
-    SELECT     cauhoibaithithuid, question, part,@num,audiomp3,image_test 
-    FROM      cau_hoi_bai_thi_thu
-    WHERE     cauhoibaithithuid= @idcauhoi  
-    insert into ket_qua(cauhoibaithithuid,email,ngaylambai,part) values (@idcauhoi,@email,CAST( GETDATE() AS Date),@part)
-    
-    set @num = (select COUNT(*) from ket_qua where email = @email and part=@part and ngaylambai =CAST( GETDATE() AS Date ))
-	end
-	end
-	select * from @temp
-	end
 	DECLARE @count INT;
 SET @count = 81;
     
@@ -243,7 +205,7 @@ BEGIN
    insert cau_hoi_bai_thi_thu(audiomp3,part) values ('image_sound\'+Cast(@count as varchar)+'.mp3',2)
    SET @count = @count + 1;
 END;
-ALTER procedure [dbo].[get_multiple_question]
+Create procedure [dbo].[get_multiple_question]
 (
     @part tinyint,
 	@email varchar(30)
@@ -340,7 +302,7 @@ ALTER procedure [dbo].[get_multiple_question]
 	end
 	select * from @temp
 	end
-	ALTER procedure [dbo].[get_choice_vocab]
+	Create procedure [dbo].[get_choice_vocab]
 (
 	@idQuestion int
 )

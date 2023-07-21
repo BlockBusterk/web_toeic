@@ -63,7 +63,7 @@ public class Result extends HttpServlet {
         String part = servletContext.getAttribute("part").toString();
         getServletContext().setAttribute("part", part);
 
-        String severNameCty = "LAPTOP-AR34IMPG\\SQLEXPRESS";
+        String severNameCty = "VTNTHUCTAP";
         String DB_URL = "jdbc:sqlserver://" + severNameCty + ":1433;"
                 + "databaseName=web_toeic"
                 + ";encrypt=true;trustServerCertificate=true;";
@@ -111,25 +111,33 @@ public class Result extends HttpServlet {
             {
                 Integer idCauHoi = (Integer) servletContext.getAttribute("idCauHoi");
                 Integer socaudung = (Integer) servletContext.getAttribute("socaudung");
-                String dapAn = "FALSE";
+                String dapAn = "TRUE";
                 String choices [] = request.getParameterValues("dap_an");
                 try (Connection conn = getConnection(DB_URL, USER_NAME, PASSWORD)) {
                     Statement stmtResult = conn.createStatement();
-                    if (choices.length==0||choices==null) {
+                    if (choices == null||choices.length==0) {
                         dapAn = "FALSE";
                     }else
                     {
                         int i=0;
                         for(String s: choices)
                         {
+                            if(s.equals("FALSE"))
+                            {
+                                dapAn = "FALSE";
+                                break;
+                            }
                             if(s.equals("TRUE"))
                             {
                                 i++;
                             }
                         }
-                        if(i==socaudung)
+                        if(i==socaudung&&dapAn.equals("TRUE"))
                         {
                             dapAn = "TRUE";
+                        }
+                        else{
+                            dapAn = "FALSE";
                         }
                     }
                     int rsResult = stmtResult.executeUpdate("Exec insert_ketqua " + idCauHoi + ",'" + email + "','" + dapAn + "'");
